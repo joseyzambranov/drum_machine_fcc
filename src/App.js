@@ -114,9 +114,28 @@ const bankTwo=[
   }
 ]
 
+
+const Keyboard = ({play}) => {
+  return bankOne.map(({keyTrigger,url})=>{
+    return <button  onClick={()=>play(keyTrigger)}><audio id={keyTrigger} src={url} />{keyTrigger}</button>
+  })
+}
+
 function App() {
+
+  const play = (key)=>{
+    const audio = document.getElementById(key)
+    audio.currentTime = 0;
+    audio.play()
+  }
+
   return(
-    <h1>Hello World</h1>
+    <div>
+
+   <Keyboard play={play}/>   
+   
+    
+    </div>
   )
 }
 
