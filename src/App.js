@@ -1,4 +1,5 @@
 import './App.css';
+import React, {useState,useEffect} from "react";
 
 const bankOne=[
   {
@@ -113,27 +114,117 @@ const bankTwo=[
     url: 'https://s3.amazonaws.com/freecodecamp/drums/Brk_Snr.mp3'
   }
 ]
+const nameSound = {
+  heater:"Heater-1",
+  chord:"Chord-1"
+}
+
+const controlSound ={
+  heater:bankOne,
+  chord:bankTwo
+}
+ 
 
 
-const Keyboard = ({play}) => {
-  return bankOne.map(({keyTrigger,url})=>{
-    return <button  onClick={()=>play(keyTrigger)}><audio id={keyTrigger} src={url} />{keyTrigger}</button>
-  })
+const KeyboardKeyTrigger =({play , sound : {id,keyTrigger,url,keyCode}})=>{
+
+  const handleKeydown =(event)=>{
+    
+    if(event.keyCode===keyCode){
+      play(keyTrigger,id)
+      
+    }
+  }
+
+  useEffect(()=>{
+    document.addEventListener("keydown", handleKeydown)
+  },[])
+return( <button id={keyCode} className='drum-pad' onClick={()=>play(keyTrigger,id)}>
+<audio className='clip' id={keyTrigger} src={url} />{keyTrigger}
+</button>)
+
+}
+
+const Keyboard = ({play,sounds,mute}) => (
+  <div  >
+    {mute ? sounds.map((sound)=> <KeyboardKeyTrigger play={play} sound={sound} />)
+          :sounds.map((sound)=> <KeyboardKeyTrigger play={play} sound={{...sound,url:"#"}} />)}
+  </div>
+)
+
+const ControlChangeSound =({name,changeSound,volume,handleChangeVolumen,offVolume,mute})=>{
+  return <div>
+    <button onClick={offVolume}>sound {mute ? "OFF" : "ON"}</button>
+    <h2>Volume: % {Math.round(volume *100)}</h2>
+    <input
+    max="1"
+    min="0"
+    step="0.01"
+    type="range"
+    value={volume}
+    onChange={handleChangeVolumen}
+    />
+    <h2 id='display' >{name}</h2>
+    <button onClick={changeSound}>Change Sounds group</button>
+  </div>
 }
 
 function App() {
+  const [mute,setMute]=useState(true)
+  const [volume,setVolume]=useState(1)
+  const [nameS,setNames]=useState("")
+  const [soundName,setSoundName]= useState("heater")
+  const[sounds,setSound]=useState(controlSound.heater)
 
-  const play = (key)=>{
+  const handleChangeVolumen=(event)=>{
+    setVolume(event.target.value)
+  }
+  const offVolume=()=>{
+    if(!mute){
+      setMute(true)
+    }else{
+      setMute(false)
+    }
+  }
+
+  const play = (key,id)=>{
+    setNames(id)
     const audio = document.getElementById(key)
     audio.currentTime = 0;
     audio.play()
   }
 
-  return(
-    <div>
+  const changeSound =()=>{
+    setNames("")
+    if(soundName==="heater"){
+      setSoundName("chord")
+      setSound(controlSound.chord)
+    }else{
+      setSoundName("heater")
+      setSound(controlSound.heater)
+    }
+  }
+  const setChangeVolume=()=>{
+    const volumen = sounds.map(sound=>document.getElementById(sound.keyTrigger))
+    volumen.forEach(e=>{
+      if(e){
+       e.volume = volume
+      }
+    })
+  }
 
-   <Keyboard play={play}/>   
-   
+  return(
+    <div id="drum-machine">
+      
+   <Keyboard play={play} mute={mute} sounds={sounds}/> 
+   {setChangeVolume()}
+   <ControlChangeSound
+   offVolume={offVolume} 
+   mute={mute}
+   volume={volume}
+   handleChangeVolumen={handleChangeVolumen} 
+   name={nameS || nameSound[soundName]} 
+   changeSound={changeSound}/>  
     
     </div>
   )
