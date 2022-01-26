@@ -139,24 +139,35 @@ const KeyboardKeyTrigger =({play , sound : {id,keyTrigger,url,keyCode}})=>{
   useEffect(()=>{
     document.addEventListener("keydown", handleKeydown)
   },[])
-return( <button id={keyCode} className='drum-pad' onClick={()=>play(keyTrigger,id)}>
+return( <button id={keyCode} className='drum-pad btn btn-outline-primary' onClick={()=>play(keyTrigger,id)}>
 <audio className='clip' id={keyTrigger} src={url} />{keyTrigger}
 </button>)
 
 }
 
 const Keyboard = ({play,sounds,mute}) => (
-  <div  >
-    {mute ? sounds.map((sound)=> <KeyboardKeyTrigger play={play} sound={sound} />)
+  
+  
+    
+      <div className=" row-cols-3  ">
+        
+        {mute ? sounds.map((sound)=> <KeyboardKeyTrigger  play={play} sound={sound} />)
           :sounds.map((sound)=> <KeyboardKeyTrigger play={play} sound={{...sound,url:"#"}} />)}
-  </div>
+
+    </div>
+  
+    
+  
 )
 
 const ControlChangeSound =({name,changeSound,volume,handleChangeVolumen,offVolume,mute})=>{
-  return <div>
-    <button onClick={offVolume}>sound {mute ? "OFF" : "ON"}</button>
-    <h2>Volume: % {Math.round(volume *100)}</h2>
-    <input
+  return <div className="row ">
+    
+    <div className='d-grid gap-2 d-md-block'>
+    <button class="btn btn-secondary" onClick={offVolume}>sound {mute ? "OFF" : "ON"}</button>
+    </div>
+       <h3 className='card-text'>Volume: % {Math.round(volume *100)}</h3>
+    <input className='form-range'
     max="1"
     min="0"
     step="0.01"
@@ -164,8 +175,14 @@ const ControlChangeSound =({name,changeSound,volume,handleChangeVolumen,offVolum
     value={volume}
     onChange={handleChangeVolumen}
     />
-    <h2 id='display' >{name}</h2>
-    <button onClick={changeSound}>Change Sounds group</button>
+    <h3 id='display' >{name}</h3>
+    <div className='d-grid gap-2 d-md-block'>
+    <button className='btn btn-primary' onClick={changeSound}>Change Sounds group</button>
+
+    
+    </div>
+    
+
   </div>
 }
 
@@ -214,10 +231,19 @@ function App() {
   }
 
   return(
-    <div id="drum-machine">
-      
-   <Keyboard play={play} mute={mute} sounds={sounds}/> 
+    
+    <div className='container-sm w-75' id="drum-machine">
+     <h1 className='text-center'>Drum Machine</h1> 
+    <br/><br/>
+   
+     <div className="row row-cols-1 g-4 row-cols-md-2  text-center contenedor">
+     
+     <Keyboard play={play} mute={mute} sounds={sounds}/> 
+     <br/><br/><br/><br/><br/><br/><br/>
+     
+    
    {setChangeVolume()}
+  
    <ControlChangeSound
    offVolume={offVolume} 
    mute={mute}
@@ -225,6 +251,8 @@ function App() {
    handleChangeVolumen={handleChangeVolumen} 
    name={nameS || nameSound[soundName]} 
    changeSound={changeSound}/>  
+     </div>
+   
     
     </div>
   )
