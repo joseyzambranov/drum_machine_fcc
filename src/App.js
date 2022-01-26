@@ -188,7 +188,7 @@ const ControlChangeSound =({name,changeSound,volume,handleChangeVolumen,offVolum
 
 function App() {
   const [mute,setMute]=useState(true)
-  const [volume,setVolume]=useState(1)
+  const [volume,setVolume]=useState(0.02)
   const [nameS,setNames]=useState("")
   const [soundName,setSoundName]= useState("heater")
   const[sounds,setSound]=useState(controlSound.heater)
